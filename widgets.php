@@ -17,7 +17,11 @@ if(!empty($_GET['widget'])) {
   if (isset($_GET['hash'])) {
       $widget_hash = $_GET['hash'];
   }
-  $widget_url  = $_SERVER["HTTP_REFERER"];
+  if (!isset($_SERVER["HTTP_REFERER"])) {
+      $widget_url = 'localhost:8080';
+  } else {
+      $widget_url = $_SERVER["HTTP_REFERER"];
+  }
 
 	$show_widget = get_widget($widget_name, $widget_hash, $widget_url);
 	if(empty($show_widget)) {
@@ -32,10 +36,15 @@ if(!empty($_GET['widget'])) {
 
 function response($status,$status_message,$data) {
   	header("HTTP/1.1 ".$status);
-
+    if (!isset($_SERVER["HTTP_REFERER"])) {
+        $widget_referer = 'localhost:8080';
+    } else {
+        $widget_referer = $_SERVER["HTTP_REFERER"];
+    }
   	$response['status']=$status;
   	$response['status_message']=$status_message;
   	$response['data']=$data;
+    $response['referer']=$widget_referer;
 
   	$json_response = json_encode($response);
   	echo $json_response;
